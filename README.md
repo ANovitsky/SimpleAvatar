@@ -1,2 +1,2 @@
 # SimpleAvatar
-.NET Library for generate avatar by username (first letters)
+.NET Library for generate colored avatar by username (first letters)

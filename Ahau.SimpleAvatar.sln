@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahau.SimpleAvatar", "Ahau.SimpleAvatar\Ahau.SimpleAvatar.csproj", "{DA26CD4E-9F52-4069-9782-1FDDE84B3A8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahau.SimpleAvatar.Tests", "Ahau.SimpleAvatar.Tests\Ahau.SimpleAvatar.Tests.csproj", "{186E0D82-5EB9-4BE2-B019-7A16EFFF5011}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA26CD4E-9F52-4069-9782-1FDDE84B3A8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA26CD4E-9F52-4069-9782-1FDDE84B3A8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA26CD4E-9F52-4069-9782-1FDDE84B3A8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA26CD4E-9F52-4069-9782-1FDDE84B3A8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{186E0D82-5EB9-4BE2-B019-7A16EFFF5011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{186E0D82-5EB9-4BE2-B019-7A16EFFF5011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{186E0D82-5EB9-4BE2-B019-7A16EFFF5011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{186E0D82-5EB9-4BE2-B019-7A16EFFF5011}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
