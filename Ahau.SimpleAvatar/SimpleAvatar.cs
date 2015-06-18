@@ -42,11 +42,11 @@ namespace Ahau.SimpleAvatar
         public Avatar()
         {
             Background = Color.White;
-            Size = new Size(60, 60);
-            Type = AvatarType.Ellipse;
+            Size = new Size(90, 90);
+            Type = AvatarType.Rectangle;
             Fill = Color.LightGray;
-            TextColor = Color.Black;
-            Font = new Font(FontFamily.GenericSansSerif, 22, FontStyle.Bold);
+            TextColor = Color.White;
+            Font = new Font(FontFamily.GenericSansSerif, 28, FontStyle.Bold);
 
             GenerateFillColor = true;
         }
