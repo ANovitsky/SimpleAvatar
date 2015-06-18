@@ -1,4 +1,4 @@
-# SimpleAvatar
+# Simple Avatar
 The simple .NET library for generate colored avatar by username.
 
 ## Usage
@@ -21,7 +21,7 @@ Rectangular avatar:
 
 ![](https://dl.dropboxusercontent.com/u/15543358/SimpleAvatar/Custom/D.png)
 
-With static bule color:
+With static blue color:
 
     using (var a = Avatar.NewAvatar.FillColor(Color.CornflowerBlue))
     {
