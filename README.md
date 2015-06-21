@@ -5,27 +5,27 @@ The simple .NET library for generate colored avatar by username.
 
 Rectangular avatar:
 
-    using (var a = Avatar.NewAvatar.Rectangle())
+    using (var a = Avatar.NewAvatar.AsRectangle())
     {
-      var result = a.DrawToBitmap("B");
+      var result = a.Draw("Roman").ToImage();
     }
     
-![](https://dl.dropboxusercontent.com/u/15543358/SimpleAvatar/B.png)
+![](https://dl.dropboxusercontent.com/u/15543358/SimpleAvatar/R.png)
   
-Сircle avatar with custom font size:
+Сircle avatar with custom font:
 
-    using (var a = Avatar.NewAvatar.Ellipse().WithFontSize(36))
+    using (var a = Avatar.NewAvatar.AsEllipse().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 36, Color.White))
     {
-      var result = a.DrawToBitmap("A");
+      var result = a.Draw("Don").ToImage();
     }
 
 ![](https://dl.dropboxusercontent.com/u/15543358/SimpleAvatar/Custom/D.png)
 
 With static blue color:
 
-    using (var a = Avatar.NewAvatar.FillColor(Color.CornflowerBlue))
+    using (var a = Avatar.NewAvatar.Fill(Color.CornflowerBlue))
     {
-      var strm = a.DrawToStream("A");
+      var strm = a.Draw("Max").ToStream();
     }
 
 ![](https://dl.dropboxusercontent.com/u/15543358/SimpleAvatar/Custom/M.png)

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Ahau.SimpleAvatar")]
-[assembly: AssemblyDescription(".NET Library for generate colored avatar by username (first letters)")]
+[assembly: AssemblyDescription("The simple .NET library for generate colored avatar by username.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ahau Software")]
 [assembly: AssemblyProduct("Ahau.SimpleAvatar")]

@@ -1,26 +1,21 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using Anotar.NLog;
 
 namespace Ahau.SimpleAvatar
 {
-    public enum AvatarType
-    {
-        Rectangle,
-        Ellipse
-    }
-    
     public class Avatar: IDisposable
     {
-        private readonly ConcurrentDictionary<string, Bitmap> _cache = new ConcurrentDictionary<string, Bitmap>();
+        protected readonly ConcurrentDictionary<string, byte[]> Cache = new ConcurrentDictionary<string, byte[]>();
 
-        public Color Background { get; protected set; }
+        public Color BackgroundColor { get; protected set; }
 
-        public Color Fill { get; protected set; }
+        public Color FillColor { get; protected set; }
 
-        public Color TextColor { get; protected set; }
+        public Color ForeColor { get; protected set; }
         
         public Size Size { get; protected set; }
 
@@ -28,7 +23,9 @@ namespace Ahau.SimpleAvatar
 
         public AvatarType Type { get; protected set; }
 
-        public bool GenerateFillColor { get; protected set; }
+        public bool CreateColorByFirstLetters { get; protected set; }
+
+        public bool IsFirstLetterContent { get; set; }
         
 
         public static Avatar NewAvatar
@@ -41,37 +38,67 @@ namespace Ahau.SimpleAvatar
 
         public Avatar()
         {
-            Background = Color.White;
+            //defaults
+            BackgroundColor = Color.White;
+            ForeColor = Color.White;
+            FillColor = Color.LightGray;
+
             Size = new Size(90, 90);
             Type = AvatarType.Rectangle;
-            Fill = Color.LightGray;
-            TextColor = Color.White;
+            
             Font = new Font(FontFamily.GenericSansSerif, 28, FontStyle.Bold);
 
-            GenerateFillColor = true;
+            CreateColorByFirstLetters = true;
+            IsFirstLetterContent = true;
         }
 
         #region Draws
-        [LogToErrorOnException]
-        public Bitmap DrawToBitmap(string content)
+
+        public virtual byte[] Draw(string content)
         {
-            if (String.IsNullOrWhiteSpace(content))
+            return Draw(content, s => IsFirstLetterContent ? s.Trim(' ').Substring(0, 1).ToUpper() : s.Trim(' ').ToUpper());
+        }
+
+        public virtual byte[] Draw(string name, Func<string, string> transformFunc)
+        {
+            if (String.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("content");
+                throw new ArgumentNullException("name");
             }
 
-            if (_cache.ContainsKey(content))
+            var content = transformFunc != null ? transformFunc(name) : name;
+
+            if (Cache.ContainsKey(content))
             {
                 LogTo.Debug("Get avatar from cache");
-                return _cache[content];
+                return Cache[content];
             }
 
+
+            using (var img = DrawToImage(content))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    img.Save(ms, ImageFormat.Png);
+                    var bytes = ms.ToArray();
+                
+                    Cache.AddOrUpdate(content, bytes, (s, source) => bytes);
+                    LogTo.Debug("Added avatar to cache");
+
+                    return bytes;
+                }
+            }
+        }
+
+        [LogToErrorOnException]
+        protected virtual Image DrawToImage(string content)
+        {
             var bitmap = new Bitmap(Size.Width, Size.Height);
-            
+
             using (var g = Graphics.FromImage(bitmap))
             {
-                g.Clear(Background);
-                using (var brush = new SolidBrush(GenerateFillColor ? content[0].ToColor() : Fill))
+                g.Clear(BackgroundColor);
+                using (var brush = new SolidBrush(CreateColorByFirstLetters ? GetColorByName(content) : FillColor))
                 {
                     switch (Type)
                     {
@@ -92,82 +119,64 @@ namespace Ahau.SimpleAvatar
                 };
 
                 g.DrawString(content, Font,
-                    new SolidBrush(TextColor), new RectangleF(new PointF(0,0),  Size), sf);
-
-                
-                _cache.AddOrUpdate(content, bitmap, (s, bitmap1) => bitmap);
-                LogTo.Debug("Added avatar to cache");
-
+                    new SolidBrush(ForeColor), new RectangleF(new PointF(0,0),  Size), sf);
+            
                 return bitmap;
             }
         }
 
-        public Stream DrawToStream(string content)
+        public virtual Color GetColorByName(string name)
         {
-            var memStream = new MemoryStream();
-            DrawToBitmap(content).Save(memStream, System.Drawing.Imaging.ImageFormat.Png);
+            if (name.Length == 0)
+                return Color.Black;
 
-            return memStream;
+            return name[0].ToColor();
         }
-
-        [LogToErrorOnException]
-        public void DrawToFile(string content, string fileName)
-        {
-            DrawToBitmap(content).Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
-        }
+      
         #endregion
 
-        public Avatar BackgroundColor(Color color)
+        public Avatar Background(Color color)
         {
-            Background = color;
+            BackgroundColor = color;
             return this;
         }
 
-        public Avatar FillColor(Color color)
+        public Avatar Fill(Color color)
         {
-            Fill = color;
-            GenerateFillColor = false;
+            FillColor = color;
+            CreateColorByFirstLetters = false;
             return this;
         }
 
-        public Avatar ByFirstLetterColor()
+        public Avatar ColorByFirstLetters()
         {
-            GenerateFillColor = true;
+            CreateColorByFirstLetters = true;
             return this;
         }
-
-
-        public Avatar Ellipse()
+        
+        public Avatar AsEllipse()
         {
             Type = AvatarType.Ellipse;
             return this;
         }
-
-        public Avatar AvatarSize(int width, int height)
-        {
-            Size = new Size(width, height);
-            return this;
-        }
-
-        public Avatar Rectangle()
+        public Avatar AsRectangle()
         {
             Type = AvatarType.Rectangle;
             return this;
         }
 
-        public Avatar WithFont(FontFamily font, FontStyle fontStyle, float fontSize, Color color)
+        public Avatar SetSize(int width, int height)
         {
-            Font = new Font(font, fontSize, fontStyle);
-            TextColor = color;
+            Size = new Size(width, height);
             return this;
         }
        
-        public Avatar WithFontSize(float fontSize)
+        public Avatar WithFont(FontFamily font, FontStyle fontStyle, float fontSize, Color foreColor)
         {
-            Font = new Font(Font.FontFamily, fontSize, Font.Style);
+            Font = new Font(font, fontSize, fontStyle);
+            ForeColor = foreColor;
             return this;
         }
-
 
         #region Dispose
         private bool _disposed = false;
@@ -186,7 +195,7 @@ namespace Ahau.SimpleAvatar
                 //Disposing outside
                 if (disposing)
                 {
-                    _cache.Clear();
+                    Cache.Clear();
                 }
 
                 _disposed = true;

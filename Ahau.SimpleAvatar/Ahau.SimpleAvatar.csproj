@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AvatarImageExtender.cs" />
+    <Compile Include="AvatarType.cs" />
     <Compile Include="CharToColorTranslator.cs" />
     <Compile Include="SimpleAvatar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

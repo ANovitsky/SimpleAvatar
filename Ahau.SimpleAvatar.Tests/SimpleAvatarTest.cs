@@ -15,7 +15,7 @@ namespace Ahau.SimpleAvatar.Tests
         [TestMethod]
         public void Ellipse()
         {
-            using (var a = Avatar.NewAvatar.Ellipse())
+            using (var a = Avatar.NewAvatar.AsEllipse())
             {
                 a.Type.Should().Be(AvatarType.Ellipse);
             }
@@ -24,7 +24,7 @@ namespace Ahau.SimpleAvatar.Tests
         [TestMethod]
         public void Rectangle()
         {
-            using (var a = Avatar.NewAvatar.Rectangle())
+            using (var a = Avatar.NewAvatar.AsRectangle())
             {
                 a.Type.Should().Be(AvatarType.Rectangle);
             }
@@ -38,17 +38,17 @@ namespace Ahau.SimpleAvatar.Tests
                 a.Font.FontFamily.Should().Be(FontFamily.GenericMonospace);
                 a.Font.Style.Should().Be(FontStyle.Bold);
                 a.Font.Size.Should().Be(25);
-                a.TextColor.Should().Be(Color.Bisque);
+                a.ForeColor.Should().Be(Color.Bisque);
             }
         }
 
         [TestMethod]
         public void FillColor()
         {
-            using (var a = Avatar.NewAvatar.FillColor(Color.Bisque))
+            using (var a = Avatar.NewAvatar.Fill(Color.Bisque))
             {
-                a.GenerateFillColor.Should().BeFalse();
-                a.Fill.Should().Be(Color.Bisque);
+                a.CreateColorByFirstLetters.Should().BeFalse();
+                a.FillColor.Should().Be(Color.Bisque);
             }
         }
 
@@ -56,23 +56,23 @@ namespace Ahau.SimpleAvatar.Tests
         public void DrawLettersToFile()
         {
 
-            using (var a = Avatar.NewAvatar.AvatarSize(90,90).Rectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
+            using (var a = Avatar.NewAvatar.SetSize(90,90).AsRectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
             {
-                for (int i = 0; i < Alphabet.Length - 2; i++)
+                for (int i = 0; i < Alphabet.Length - 4; i++)
                 {
-                    var symbol = Alphabet.Substring(i, 1);
-                    var fileName = Path.GetTempFileName();
+                    var symbol = Alphabet.Substring(i, 2);
+                    var fileName = String.Format("D:\\" + symbol + ".png" );//Path.GetTempFileName();
 
-                    a.DrawToFile(symbol, fileName);
+                    a.Draw(symbol).SaveTo(fileName);
 
                     File.Exists(fileName).Should().BeTrue();
 
-                    using (var b = Bitmap.FromFile(fileName))
+                    using (var b = Image.FromFile(fileName))
                     {
                         b.Size.Should().Be(a.Size);     
                     }
 
-                    File.Delete(fileName);
+                    //File.Delete(fileName);
                 }
             }
         }
@@ -80,12 +80,12 @@ namespace Ahau.SimpleAvatar.Tests
         [TestMethod]
         public void DrawLettersToBitmap()
         {
-            using (var a = Avatar.NewAvatar.AvatarSize(90, 90).Rectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
+            using (var a = Avatar.NewAvatar.SetSize(90, 90).AsRectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
             {
                 for (int i = 0; i < Alphabet.Length - 2; i++)
                 {
                     var symbol = Alphabet.Substring(i, 1);
-                    using (var bitmap = a.DrawToBitmap(symbol))
+                    using (var bitmap = a.Draw(symbol).ToImage())
                     {
                         bitmap.Size.Should().Be(a.Size);
                     }
@@ -96,14 +96,14 @@ namespace Ahau.SimpleAvatar.Tests
         [TestMethod]
         public void DrawLettersToStream()
         {
-            using (var a = Avatar.NewAvatar.AvatarSize(90, 90).Rectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
+            using (var a = Avatar.NewAvatar.SetSize(90, 90).AsRectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
             {
                 for (int i = 0; i < Alphabet.Length - 2; i++)
                 {
                     var symbol = Alphabet.Substring(i, 1);
-                    using (var strm = a.DrawToStream(symbol))
+                    using (var strm = a.Draw(symbol).ToStream())
                     {
-                        using (var b = Bitmap.FromStream(strm))
+                        using (var b = Image.FromStream(strm))
                         {
                             b.Size.Should().Be(a.Size);     
                         }
