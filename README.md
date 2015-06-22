@@ -5,7 +5,7 @@ The simple .NET library for generate colored avatar by username.
 
 Rectangular avatar:
 
-    using (var a = Avatar.NewAvatar.AsRectangle())
+    using (var a = Avatar.NewAvatar)
     {
       var result = a.Draw("Roman").ToImage();
     }
@@ -23,7 +23,7 @@ Rectangular avatar:
 
 With static blue color:
 
-    using (var a = Avatar.NewAvatar.Fill(Color.CornflowerBlue))
+    using (var a = Avatar.NewAvatar.AsRectangle().Fill(Color.CornflowerBlue))
     {
       var strm = a.Draw("Max").ToStream();
     }
@@ -33,6 +33,37 @@ With static blue color:
 ## NuGet
 [Nuget package](https://www.nuget.org/packages/Ahau.SimpleAvatar)
 
+## Example
+
+    class SimpleAvatarExample
+    {
+        private readonly Lazy<Avatar> _avatars;
+
+        public SimpleAvatarExample()
+        {
+            _avatars = new Lazy<Avatar>(() => Avatar.NewAvatar.AsRectangle().Fill(Color.CornflowerBlue));
+        }
+
+        private Avatar Avatars
+        {
+            get { return _avatars.Value; }
+        }
+
+        public Image GetUserAvatarByName(string name)
+        {
+            return Avatars.Draw(name).ToImage();
+        }
+
+        public Stream GetUserAvatarByNameWithDot(string name)
+        {
+            return Avatars.Draw(name, s => s + ".").ToStream();
+        }
+        
+        public byte[] GetUserAvatarBlob(string name)
+        {
+            return Avatars.Draw(name);
+        }
+    }
 
 ## Default 
 ![](https://dl.dropboxusercontent.com/u/15543358/SimpleAvatar/A.png)

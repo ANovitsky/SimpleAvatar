@@ -59,6 +59,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="SimpleAvatarExample.cs" />
     <Compile Include="SimpleAvatarTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

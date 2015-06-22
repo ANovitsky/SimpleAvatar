@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
 using Anotar.NLog;
 
@@ -44,9 +46,9 @@ namespace Ahau.SimpleAvatar
             FillColor = Color.LightGray;
 
             Size = new Size(90, 90);
-            Type = AvatarType.Rectangle;
-            
-            Font = new Font(FontFamily.GenericSansSerif, 28, FontStyle.Bold);
+            Type = AvatarType.Ellipse;
+
+            Font = new Font("Tahoma", 42, FontStyle.Bold);
 
             CreateColorByFirstLetters = true;
             IsFirstLetterContent = true;
@@ -98,6 +100,10 @@ namespace Ahau.SimpleAvatar
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(BackgroundColor);
+
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                
                 using (var brush = new SolidBrush(CreateColorByFirstLetters ? GetColorByName(content) : FillColor))
                 {
                     switch (Type)
@@ -115,11 +121,12 @@ namespace Ahau.SimpleAvatar
                 var sf = new StringFormat
                 {
                     LineAlignment = StringAlignment.Center,
+                    FormatFlags = StringFormatFlags.NoClip,
                     Alignment = StringAlignment.Center
                 };
 
                 g.DrawString(content, Font,
-                    new SolidBrush(ForeColor), new RectangleF(new PointF(0,0),  Size), sf);
+                    new SolidBrush(ForeColor), new RectangleF(new PointF(), Size), sf);
             
                 return bitmap;
             }

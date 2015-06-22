@@ -11,7 +11,7 @@ namespace Ahau.SimpleAvatar
     {
         public static Color ToColor(this char symbol)
         {
-            return ColorTranslator.FromOle(symbol * 1000);
+            return ColorTranslator.FromOle(symbol * 1300);
         }
     }
 }

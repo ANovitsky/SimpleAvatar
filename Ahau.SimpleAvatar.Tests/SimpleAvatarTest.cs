@@ -10,7 +10,7 @@ namespace Ahau.SimpleAvatar.Tests
     [TestClass]
     public class SimpleAvatarTest
     {
-        const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXY12";
+        const string Alphabet = "АБВГДПABCDEFGHIJKLMNOPQRSTUVWXY12";
 
         [TestMethod]
         public void Ellipse()
@@ -56,12 +56,12 @@ namespace Ahau.SimpleAvatar.Tests
         public void DrawLettersToFile()
         {
 
-            using (var a = Avatar.NewAvatar.SetSize(90,90).AsRectangle().WithFont(FontFamily.GenericSansSerif, FontStyle.Bold, 26, Color.White))
+            using (var a = Avatar.NewAvatar.SetSize(90, 90))
             {
                 for (int i = 0; i < Alphabet.Length - 4; i++)
                 {
-                    var symbol = Alphabet.Substring(i, 2);
-                    var fileName = String.Format("D:\\" + symbol + ".png" );//Path.GetTempFileName();
+                    var symbol = Alphabet.Substring(i, 1);
+                    var fileName = Path.GetTempFileName();
 
                     a.Draw(symbol).SaveTo(fileName);
 
@@ -72,7 +72,7 @@ namespace Ahau.SimpleAvatar.Tests
                         b.Size.Should().Be(a.Size);     
                     }
 
-                    //File.Delete(fileName);
+                    File.Delete(fileName);
                 }
             }
         }
