@@ -3,7 +3,7 @@ The simple .NET library for generate colored avatar by username.
 
 ## Usage
 
-Rectangular avatar:
+Default avatar:
 
     using (var a = Avatar.NewAvatar)
     {
