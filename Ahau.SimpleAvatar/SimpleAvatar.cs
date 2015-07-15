@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
-using Anotar.NLog;
 
 namespace Ahau.SimpleAvatar
 {
@@ -72,7 +71,7 @@ namespace Ahau.SimpleAvatar
 
             if (Cache.ContainsKey(content))
             {
-                LogTo.Debug("Get avatar from cache");
+                OnLog("Get avatar from cache");
                 return Cache[content];
             }
 
@@ -85,50 +84,57 @@ namespace Ahau.SimpleAvatar
                     var bytes = ms.ToArray();
                 
                     Cache.AddOrUpdate(content, bytes, (s, source) => bytes);
-                    LogTo.Debug("Added avatar to cache");
+                    OnLog("Added avatar to cache");
 
                     return bytes;
                 }
             }
         }
 
-        [LogToErrorOnException]
         protected virtual Image DrawToImage(string content)
         {
             var bitmap = new Bitmap(Size.Width, Size.Height);
 
-            using (var g = Graphics.FromImage(bitmap))
+            try
             {
-                g.Clear(BackgroundColor);
-
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                
-                using (var brush = new SolidBrush(CreateColorByFirstLetters ? GetColorByName(content) : FillColor))
+                using (var g = Graphics.FromImage(bitmap))
                 {
-                    switch (Type)
+                    g.Clear(BackgroundColor);
+
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+                    using (var brush = new SolidBrush(CreateColorByFirstLetters ? GetColorByName(content) : FillColor))
                     {
-                        case AvatarType.Rectangle:
-                            g.FillRectangle(brush, new Rectangle(new Point(0,0), Size));
-                            break;
-                        default:
-                            g.FillEllipse(brush, 0, 0, Size.Width - 1, Size.Height - 1);
-                            break;
-                                
+                        switch (Type)
+                        {
+                            case AvatarType.Rectangle:
+                                g.FillRectangle(brush, new Rectangle(new Point(0, 0), Size));
+                                break;
+                            default:
+                                g.FillEllipse(brush, 0, 0, Size.Width - 1, Size.Height - 1);
+                                break;
+
+                        }
                     }
+
+                    var sf = new StringFormat
+                    {
+                        LineAlignment = StringAlignment.Center,
+                        FormatFlags = StringFormatFlags.NoClip,
+                        Alignment = StringAlignment.Center
+                    };
+
+                    g.DrawString(content, Font,
+                        new SolidBrush(ForeColor), new RectangleF(new PointF(), Size), sf);
+
+                    return bitmap;
                 }
-
-                var sf = new StringFormat
-                {
-                    LineAlignment = StringAlignment.Center,
-                    FormatFlags = StringFormatFlags.NoClip,
-                    Alignment = StringAlignment.Center
-                };
-
-                g.DrawString(content, Font,
-                    new SolidBrush(ForeColor), new RectangleF(new PointF(), Size), sf);
-            
-                return bitmap;
+            }
+            catch (Exception ex)
+            {
+                OnError(new ErrorEventArgs(ex));
+                throw;
             }
         }
 
@@ -214,5 +220,21 @@ namespace Ahau.SimpleAvatar
             Dispose (false);
         }
         #endregion
+
+        public event EventHandler<string> Log;
+
+        protected virtual void OnLog(string e)
+        {
+            var handler = Log;
+            if (handler != null) handler(this, e);
+        }
+
+        public event ErrorEventHandler Error;
+
+        protected virtual void OnError(ErrorEventArgs e)
+        {
+            var handler = Error;
+            if (handler != null) handler(this, e);
+        }
     }
 }
